@@ -3,17 +3,32 @@
 /// Uses REACT_APP_API_BASE_URL from environment to configure the base URL.
 /// All functions return parsed JSON or throw an error with a message for the caller to handle.
 
-const BASE_URL = process.env.REACT_APP_API_BASE_URL;
+/**
+ * Internal: returns the configured API base URL without trailing slashes.
+ * Reads from process.env.REACT_APP_API_BASE_URL at build time.
+ */
+function _readEnvBaseUrl() {
+  const v = process.env.REACT_APP_API_BASE_URL || "";
+  // Remove any trailing slashes to avoid `//` when joining paths
+  return v.replace(/\/+$/, "");
+}
+
+// PUBLIC_INTERFACE
+export function getApiBaseUrl() {
+  /** Returns the API base URL configured via REACT_APP_API_BASE_URL, with trailing slashes removed, or empty string if not set. */
+  return _readEnvBaseUrl();
+}
 
 /**
  * Build a full URL from a path (e.g., "/games")
- * Throws a clear error if BASE_URL is not configured.
+ * Throws a clear error if the base URL is not configured.
  */
 function buildUrl(path) {
-  if (!BASE_URL) {
+  const base = getApiBaseUrl();
+  if (!base) {
     throw new Error("Frontend not configured: REACT_APP_API_BASE_URL is missing.");
   }
-  return `${BASE_URL}${path}`;
+  return `${base}${path}`;
 }
 
 /**
@@ -32,7 +47,7 @@ async function handleResponse(res) {
         const text = await res.text();
         if (text) detail = text;
       }
-    } catch (e) {
+    } catch {
       // ignore parse errors
     }
     throw new Error(detail);

@@ -6,7 +6,7 @@ import GameBoard from "./components/GameBoard";
 import ChatPanel from "./components/ChatPanel";
 import Scoreboard from "./components/Scoreboard";
 import Header from "./components/Header";
-import { createGame, makeMove, getPlayerScore, setPlayerScore } from "./services/api";
+import { createGame, makeMove, getPlayerScore, setPlayerScore, getApiBaseUrl } from "./services/api";
 
 const DEFAULT_BOARD = Array(9).fill("");
 
@@ -20,7 +20,7 @@ function App() {
   const [error, setError] = useState("");
   const [showLogin, setShowLogin] = useState(() => !localStorage.getItem("ttt_username"));
 
-  const apiConfigured = Boolean(process.env.REACT_APP_API_BASE_URL);
+  const apiConfigured = Boolean(getApiBaseUrl());
 
   useEffect(() => {
     // Avoid auto-creating game when user not set or API missing
